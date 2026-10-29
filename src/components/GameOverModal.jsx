@@ -9,18 +9,46 @@ import {
 } from './Icons';
 
 /**
- * Professional Game Over Modal — Chess.com / Lichess standard
- * Sleek card, player matchup duel, crisp SVG vector icons, zero emojis.
+ * Format the end reason into a concise, professional chess subtitle
+ * e.g. "by checkmate", "on time", "by stalemate"
+ */
+function formatReason(reason, winner) {
+  if (!reason) {
+    return winner === 'w' ? 'by checkmate' : winner === 'b' ? 'by checkmate' : 'Game drawn';
+  }
+  const r = reason.toLowerCase();
+  if (r.includes('checkmate')) return 'by checkmate';
+  if (r.includes('flag fall') || r.includes('time')) return 'on time';
+  if (r.includes('stalemate')) return 'by stalemate';
+  if (r.includes('insufficient')) return 'by insufficient material';
+  if (r.includes('threefold') || r.includes('repetition')) return 'by repetition';
+  if (r.includes('50-move')) return 'by 50-move rule';
+  if (r.includes('resig')) return 'by resignation';
+  return reason;
+}
+
+/**
+ * Professional Chess Game Victory / Game Over Modal — Production Quality
+ * Charcoal dark theme, elegant green accents, tactile buttons, crisp SVG vector icons.
  */
 export default function GameOverModal({ result, onNewGame, onClose }) {
   const modalRef = useRef(null);
 
+  // Auto-focus primary Rematch button and support Esc to dismiss modal
   useEffect(() => {
     const primaryBtn = modalRef.current?.querySelector('.gom-btn-primary');
     if (primaryBtn) {
-      setTimeout(() => primaryBtn.focus(), 80);
+      setTimeout(() => primaryBtn.focus(), 60);
     }
-  }, []);
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   if (!result) return null;
 
@@ -33,6 +61,8 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
 
   const titleText = isWin ? 'You Won!' : isLoss ? 'Game Over' : 'Game Drawn';
   const statusTheme = isWin ? 'win' : isLoss ? 'loss' : 'draw';
+  const statusLabel = isWin ? 'Victory' : isLoss ? 'Defeat' : 'Draw';
+  const subtitleText = formatReason(result.reason, result.winner);
 
   return (
     <div className="gom-overlay" role="dialog" aria-modal="true" aria-label="Game result">
@@ -42,7 +72,7 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
         <button
           className="gom-close-btn"
           onClick={onClose}
-          title="Review Board"
+          title="Review Board (Esc)"
           aria-label="Close dialog"
         >
           <CloseIcon size={16} />
@@ -51,18 +81,18 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
         {/* ── Header: Result Icon & Clean Title ── */}
         <div className="gom-header">
           <div className={`gom-icon-halo gom-icon-halo--${statusTheme}`}>
-            {isWin && <TrophyIcon size={28} className="gom-svg-icon" />}
-            {isLoss && <SwordsIcon size={28} className="gom-svg-icon" />}
-            {isDraw && <HandshakeIcon size={28} className="gom-svg-icon" />}
+            {isWin && <TrophyIcon size={32} className="gom-svg-icon" />}
+            {isLoss && <SwordsIcon size={30} className="gom-svg-icon" />}
+            {isDraw && <HandshakeIcon size={30} className="gom-svg-icon" />}
           </div>
           <h2 className={`gom-headline gom-headline--${statusTheme}`}>{titleText}</h2>
-          <p className="gom-subtitle">{result.reason}</p>
+          <p className="gom-subtitle">{subtitleText}</p>
         </div>
 
         {/* ── Player Matchup Duel Card ── */}
         <div className="gom-duel-card">
           {/* User (White) */}
-          <div className={`gom-player-card ${isWin ? 'winner' : ''}`}>
+          <div className={`gom-player-pod gom-player-left ${isWin ? 'is-winner' : ''}`}>
             <div className="gom-player-avatar-wrap">
               <img
                 src="/images/user_avatar.png"
@@ -75,17 +105,25 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
               <span className="gom-player-name">You</span>
               <span className="gom-player-sub">White</span>
             </div>
-            <div className={`gom-player-score ${isWin ? 'score-win' : ''}`}>
-              {whiteScore}
-            </div>
           </div>
 
-          <div className="gom-duel-divider">
-            <span className="gom-duel-vs">vs</span>
+          {/* Center Match Score */}
+          <div className="gom-duel-score-center">
+            <span className={`gom-score-badge ${isWin ? 'score-win' : ''}`}>
+              {whiteScore}
+            </span>
+            <span className="gom-duel-sep">-</span>
+            <span className={`gom-score-badge ${isLoss ? 'score-win' : ''}`}>
+              {blackScore}
+            </span>
           </div>
 
           {/* Stockfish Bot (Black) */}
-          <div className={`gom-player-card ${isLoss ? 'winner' : ''}`}>
+          <div className={`gom-player-pod gom-player-right ${isLoss ? 'is-winner' : ''}`}>
+            <div className="gom-player-meta text-right">
+              <span className="gom-player-name">Stockfish</span>
+              <span className="gom-player-sub">Black</span>
+            </div>
             <div className="gom-player-avatar-wrap">
               <img
                 src="/images/stockfish.png"
@@ -94,13 +132,6 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
               />
               <span className="gom-piece-indicator black-piece-indicator" title="Black" />
             </div>
-            <div className="gom-player-meta">
-              <span className="gom-player-name">Stockfish</span>
-              <span className="gom-player-sub">Black</span>
-            </div>
-            <div className={`gom-player-score ${isLoss ? 'score-win' : ''}`}>
-              {blackScore}
-            </div>
           </div>
         </div>
 
@@ -108,7 +139,7 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
         <div className="gom-meta-strip">
           <div className="gom-meta-item">
             <span className="gom-meta-label">Total Moves</span>
-            <span className="gom-meta-val">{result.totalMoves}</span>
+            <span className="gom-meta-val">{result.totalMoves || 0}</span>
           </div>
           <div className="gom-meta-sep" />
           <div className="gom-meta-item">
@@ -119,7 +150,7 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
           <div className="gom-meta-item">
             <span className="gom-meta-label">Status</span>
             <span className={`gom-meta-val gom-meta-status--${statusTheme}`}>
-              {isWin ? 'Victory' : isLoss ? 'Defeat' : 'Draw'}
+              {statusLabel}
             </span>
           </div>
         </div>
@@ -131,7 +162,7 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
             onClick={onNewGame}
             title="Start a new rematch"
           >
-            <RefreshIcon size={16} />
+            <RefreshIcon size={18} />
             <span>Rematch</span>
           </button>
           <button
@@ -139,7 +170,7 @@ export default function GameOverModal({ result, onNewGame, onClose }) {
             onClick={onClose}
             title="Review the board position"
           >
-            <EyeIcon size={16} />
+            <EyeIcon size={18} />
             <span>Review Board</span>
           </button>
         </div>

@@ -139,6 +139,34 @@ export default function Board() {
     gameRef.current = game;
   }, [game]);
 
+  useEffect(() => {
+    window.__showVictoryModal = (scenario = 'win') => {
+      if (scenario === 'win') {
+        setGameOverResult({
+          winner: 'w',
+          reason: 'Checkmate — You Won!',
+          fideRule: 'Article 5.1.a (Checkmate)',
+          totalMoves: 34,
+        });
+      } else if (scenario === 'loss') {
+        setGameOverResult({
+          winner: 'b',
+          reason: 'Checkmate — Stockfish Bot Won!',
+          fideRule: 'Article 5.1.a (Checkmate)',
+          totalMoves: 42,
+        });
+      } else {
+        setGameOverResult({
+          winner: 'draw',
+          reason: 'Drawn by Stalemate',
+          fideRule: 'Article 5.2.a (Stalemate)',
+          totalMoves: 56,
+        });
+      }
+      setShowGameOverModal(true);
+    };
+  }, []);
+
   const soundEnabledRef = useRef(soundEnabled);
   useEffect(() => {
     soundEnabledRef.current = soundEnabled;

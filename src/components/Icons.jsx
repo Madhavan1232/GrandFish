@@ -193,7 +193,7 @@ export function DrawIcon({ size = 18, className = '' }) {
 }
 
 // 11. Trophy Icon (Victory)
-export function TrophyIcon({ size = 22, className = '' }) {
+export function TrophyIcon({ size = 28, className = '' }) {
   return (
     <svg
       width={size}
@@ -207,9 +207,12 @@ export function TrophyIcon({ size = 22, className = '' }) {
       className={className}
       aria-hidden="true"
     >
-      <path d="M10 14.66V17a1 1 0 0 1-1 1a2 2 0 0 0-2 2v2m7-7.34V17a1 1 0 0 0 1 1a2 2 0 0 1 2 2v2m.916-12H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3M4 22h16" />
-      <path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z" />
-      <path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3" />
+      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+      <path d="M4 22h16" />
+      <path d="M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34" />
+      <path d="M6 3h12v7a6 6 0 0 1-12 0V3z" fill="currentColor" fillOpacity="0.15" />
+      <path d="M12 6.2l.75 1.52 1.68.25-1.22 1.18.29 1.67L12 10.03l-1.5.79.29-1.67-1.22-1.18 1.68-.25L12 6.2z" fill="currentColor" stroke="none" />
     </svg>
   );
 }
