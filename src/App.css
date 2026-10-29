@@ -1,38 +1,1139 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ==========================================================================
+   ChessAI — Premium Chess.com-style Theme
+   ========================================================================== */
+
+:root {
+  --bg-app: #302e2b;
+  --bg-surface: #262421;
+  --bg-surface-raised: #2e2b28;
+  --bg-surface-overlay: #1e1c1a;
+
+  --bg-clock-idle: #21201d;
+  --bg-clock-active: #ffffff;
+  --text-clock-idle: #7a7875;
+  --text-clock-active: #1a1917;
+
+  --accent-green: #81b64c;
+  --accent-green-hover: #92c957;
+  --accent-green-dim: rgba(129, 182, 76, 0.15);
+  --accent-blue: #4f9cf9;
+  --accent-red: #e84040;
+  --accent-gold: #f0c040;
+  --accent-gold-dim: rgba(240, 192, 64, 0.15);
+
+  --text-primary: #ffffff;
+  --text-secondary: #c3c1bc;
+  --text-muted: #7a7875;
+
+  --border: rgba(255, 255, 255, 0.07);
+  --border-light: rgba(255, 255, 255, 0.13);
+
+  --radius-xs: 3px;
+  --radius-sm: 5px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.5);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.72);
+  --shadow-glow-green: 0 0 20px rgba(129, 182, 76, 0.3);
 }
 
-.App-logo {
-  height: 40vmin;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* ── Full Application Shell ── */
+.chesscom-app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-app);
+  overflow: hidden;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ── Main Chess Arena (Centered, Big Board, No Sidebar) ── */
+.chesscom-main-arena {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.board-container-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /*
+   * Available height:
+   * 100vh - 2×arenaPadding(12px) - 2×playerRows(42px) - 2×gaps(8px)
+   * = 100vh - 24px - 84px - 16px = 100vh - 124px
+   * Clamped to 820px max and leaving breathing room so nothing clips.
+   */
+  width: min(calc(100vh - 128px), calc(100vw - 120px), 820px);
+  max-width: 96vw;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ── Player Rows (Opponent & You) ── */
+.arena-player-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 2px;
+  min-height: 42px;
+  height: 42px;
+}
+
+.player-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 4px;
+  background-color: #383531;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.stockfish-avatar-img {
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.user-avatar-img {
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.player-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.user-name-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-display-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  letter-spacing: 0.1px;
+}
+
+.country-flag {
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+  color: #d0ceca;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+
+/* ── Captured Pieces ── */
+
+.captured-pieces {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-height: 18px;
+  line-height: 1;
+}
+
+.captured-icons {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.captured-piece-stack {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.captured-piece-img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+  display: block;
+  user-select: none;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.captured-lucide-icon {
+  width: 17px;
+  height: 17px;
+  display: inline-block;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.75));
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* White captured pieces (captured by Black) */
+.captured-lucide-icon--w {
+  color: #ffffff;
+  stroke: #ffffff;
+  fill: rgba(255, 255, 255, 0.38);
+  stroke-width: 2px;
+}
+
+/* Black captured pieces (captured by White) */
+.captured-lucide-icon--b {
+  color: #a8a49d;
+  stroke: #a8a49d;
+  fill: #161514;
+  stroke-width: 2.1px;
+}
+
+.material-advantage {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #c8c5c0;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 5px;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+
+/* ── Digital Clock Display (Chess.com exact match) ── */
+.chess-clock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  height: 32px;
+  padding: 0 12px;
+  background-color: var(--bg-clock-idle);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-clock-idle);
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.clock-icon {
+  display: none; /* Chess.com does not display an icon inside the clock */
+}
+
+.chess-clock.active {
+  background-color: var(--bg-clock-active);
+  color: var(--text-clock-active);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.chess-clock.low-time {
+  background-color: #8c2626;
+  color: #ffffff;
+}
+
+.chess-clock.expired {
+  background-color: #5a1818;
+  color: #ff6e6e;
+}
+
+/* ── Chessboard & Side Toolbar ── */
+.chessboard-and-toolbar {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.main-board-frame {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  position: relative;
+}
+
+/* ── Vertical Action Toolbar (Image 2) ── */
+.board-side-toolbar {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 15;
+}
+
+.settings-btn-anchor {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-btn {
+  background: transparent;
+  border: none;
+  color: #9e9b94;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: all 0.15s ease;
+  opacity: 0.8;
+  padding: 0;
+}
+
+.toolbar-btn svg {
+  display: block;
+  transition: transform 0.15s ease;
+}
+
+.toolbar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  opacity: 1;
+}
+
+.toolbar-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.toolbar-btn[title="Reset Game"]:active svg {
+  transform: rotate(180deg) scale(0.95);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toolbar-btn.active {
+  color: var(--accent-green);
+  background-color: rgba(129, 182, 76, 0.15);
+  opacity: 1;
+}
+
+/* ── FIDE Pawn Promotion Modal ── */
+.promotion-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.15s ease;
+}
+
+.promotion-dialog {
+  background: #262421;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.promotion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.promotion-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.promotion-square {
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(129, 182, 76, 0.2);
+  color: var(--accent-green);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+}
+
+.promotion-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.promotion-option-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 4px;
+  background: #312e2b;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.App-link {
-  color: #61dafb;
+.promotion-option-btn:hover {
+  background: #3d3a36;
+  border-color: var(--accent-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(129, 182, 76, 0.35);
 }
 
-@keyframes App-logo-spin {
+.promotion-piece-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.promotion-piece-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.promotion-piece-val {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.promotion-cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.promotion-cancel-btn:hover {
+  background: #312e2b;
+  color: var(--text-secondary);
+}
+
+/* ── Settings Dropdown Menu (Anchored to Gear Icon) ── */
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: transparent;
+  cursor: default;
+}
+
+.settings-dropdown-menu {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: -4px;
+  width: 300px;
+  max-height: 85vh;
+  background: #262421;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+@keyframes dropdownSlideIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateX(-8px) scale(0.97);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.settings-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #1e1d1a;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-dropdown-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.settings-title-icon {
+  color: var(--accent-green);
+}
+
+.settings-dropdown-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-xs);
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.settings-dropdown-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.settings-dropdown-scroll {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(85vh - 46px);
+  overflow-y: auto;
+}
+
+.settings-dropdown-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.settings-dropdown-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.settings-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #312e2b;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.settings-btn svg {
+  flex-shrink: 0;
+}
+
+.settings-btn:hover:not(:disabled) {
+  background: #383531;
+  border-color: var(--border-light);
+  color: #fff;
+}
+
+.settings-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.settings-btn.primary {
+  background: linear-gradient(135deg, var(--accent-green), #68923e);
+  color: #fff;
+  border-color: var(--accent-green);
+}
+
+.settings-btn.primary:hover {
+  background: linear-gradient(135deg, var(--accent-green-hover), var(--accent-green));
+}
+
+.settings-btn.warning {
+  background: rgba(250, 65, 65, 0.12);
+  color: #ff6e6e;
+  border-color: rgba(250, 65, 65, 0.3);
+}
+
+.settings-btn.warning:hover:not(:disabled) {
+  background: rgba(250, 65, 65, 0.22);
+  border-color: rgba(250, 65, 65, 0.5);
+  color: #fff;
+}
+
+.settings-grid-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.settings-opt-pill {
+  padding: 5px 10px;
+  background: #312e2b;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.settings-opt-pill:hover {
+  background: #383531;
+  color: #fff;
+}
+
+.settings-opt-pill.active {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+  color: #fff;
+  font-weight: 700;
+}
+
+.toggles-section {
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  gap: 8px;
+}
+
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.toggle-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.toggle-switch {
+  width: 40px;
+  height: 22px;
+  background: #3c3935;
+  border: none;
+  border-radius: var(--radius-full);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  padding: 2px;
+}
+
+.toggle-switch.on {
+  background: var(--accent-green);
+}
+
+.toggle-slider {
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.toggle-switch.on .toggle-slider {
+  transform: translateX(18px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GAME OVER MODAL — Premium redesign
+   ═══════════════════════════════════════════════════════════════ */
+
+.gom-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: gomFadeIn 0.2s ease;
+}
+
+.gom-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px) saturate(0.8);
+  -webkit-backdrop-filter: blur(8px) saturate(0.8);
+}
+
+@keyframes gomFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.gom-modal {
+  position: relative;
+  z-index: 10;
+  background: #262421;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  width: min(430px, 92vw);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  animation: gomSlideUp 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  padding: 28px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes gomSlideUp {
+  from { transform: translateY(16px) scale(0.97); opacity: 0; }
+  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+.gom-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  border: none;
+  color: #8b8987;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gom-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* ── Header: Icon Halo & Title ── */
+.gom-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.gom-icon-halo {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.gom-icon-halo--win {
+  background: rgba(129, 182, 76, 0.16);
+  color: #81b64c;
+  box-shadow: 0 0 24px rgba(129, 182, 76, 0.3);
+  border: 1.5px solid rgba(129, 182, 76, 0.35);
+}
+
+.gom-icon-halo--loss {
+  background: rgba(232, 64, 64, 0.16);
+  color: #e84040;
+  box-shadow: 0 0 24px rgba(232, 64, 64, 0.28);
+  border: 1.5px solid rgba(232, 64, 64, 0.35);
+}
+
+.gom-icon-halo--draw {
+  background: rgba(136, 152, 204, 0.16);
+  color: #8898cc;
+  box-shadow: 0 0 24px rgba(136, 152, 204, 0.28);
+  border: 1.5px solid rgba(136, 152, 204, 0.35);
+}
+
+.gom-headline {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  margin: 0 0 6px;
+}
+
+.gom-headline--win  { color: #81b64c; }
+.gom-headline--loss { color: #ffffff; }
+.gom-headline--draw { color: #8898cc; }
+
+.gom-subtitle {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #a3a19d;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── Player Duel Card ── */
+.gom-duel-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.gom-player-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.gom-player-avatar-wrap {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.gom-player-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
+}
+
+.gom-piece-indicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid #262421;
+}
+
+.white-piece-indicator {
+  background: #ffffff;
+}
+
+.black-piece-indicator {
+  background: #1e1c1a;
+  border: 1.5px solid #666;
+}
+
+.gom-player-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gom-player-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.gom-player-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: #8b8987;
+  line-height: 1.2;
+}
+
+.gom-player-score {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 800;
+  color: #7a7875;
+  margin-left: auto;
+}
+
+.gom-player-score.score-win {
+  color: #81b64c;
+}
+
+.gom-duel-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.gom-duel-vs {
+  font-size: 10px;
+  font-weight: 700;
+  color: #666360;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ── Match Info Meta Bar ── */
+.gom-meta-strip {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+}
+
+.gom-meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.gom-meta-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #7a7875;
+}
+
+.gom-meta-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e0ded9;
+}
+
+.gom-meta-status--win  { color: #81b64c; }
+.gom-meta-status--loss { color: #e84040; }
+.gom-meta-status--draw { color: #8898cc; }
+
+.gom-meta-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Action Buttons (Clean vector icons, zero emojis) ── */
+.gom-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+}
+
+.gom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  outline: none;
+  letter-spacing: 0.1px;
+}
+
+.gom-btn:focus-visible {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 2px;
+}
+
+.gom-btn:active {
+  transform: scale(0.985);
+}
+
+.gom-btn-primary {
+  background: var(--accent-green);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(129, 182, 76, 0.35);
+}
+
+.gom-btn-primary:hover {
+  background: var(--accent-green-hover);
+  box-shadow: 0 5px 18px rgba(129, 182, 76, 0.45);
+}
+
+.gom-btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #d0ceca;
+}
+
+.gom-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Shared Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(14px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Silky Smooth Piece Movement (Chess.com Easing) ── */
+.main-board-frame [data-piece] {
+  /* Subtle, fluid Chess.com cubic curve applied to piece transformations */
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+  will-change: transform;
+}
+
+/* Elevate pieces currently in motion above other pieces and squares */
+.main-board-frame [data-piece][style*="transform"] {
+  z-index: 30 !important;
+}
+
+/* Ensure drag-and-drop piece tracking is instant without delayed tweening */
+div[style*="z-index: 999"],
+div[style*="z-index: 999"] *,
+[data-dnd-clone="true"],
+.main-board-frame [style*="cursor: grabbing"],
+.main-board-frame [style*="cursor: grabbing"] * {
+  transition: none !important;
+  will-change: transform, filter;
+}
+
+/* Ensure hover square borders during piece drag appear white instead of black */
+.main-board-frame [data-square][style*="box-shadow"],
+.main-board-frame [id*="-square-"][style*="box-shadow"] {
+  box-shadow: inset 0px 0px 0px 2.5px #ffffff !important;
+}
+
+/* Remove faded ghost piece left at original square during drag */
+.main-board-frame [data-piece][style*="opacity: 0"],
+.main-board-frame [data-piece][style*="visibility: hidden"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* ── Responsive rules ── */
+@media (max-width: 1100px) {
+  .settings-dropdown-menu {
+    left: auto;
+    right: 0;
+    top: calc(100% + 8px);
+  }
+}
+
+@media (max-width: 800px) {
+  .chesscom-main-arena {
+    padding: 4px;
+  }
+  .board-side-toolbar {
+    left: auto;
+    right: 4px;
+    top: 4px;
   }
 }
